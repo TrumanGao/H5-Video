@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>视频播放器</title>
+	<link rel="stylesheet" href="./css/font-awesome.css">
+	<link rel="stylesheet" href="css/player.css">
+</head>
+<body>
+    <figcaption>视频播放器</figcaption>
+    <div class="player">
+        <video src="./video/fun.mp4"></video>
+        <!-- 底部控制栏 -->
+        <div class="controls">
+            <!-- 播放/暂停 -->
+            <a href="javascript:;" class="switch fa fa-play"></a>
+            <!-- 全屏 -->
+            <a href="javascript:;" class="expand fa fa-expand"></a>
+            <!-- 进度条 -->
+            <div class="progress">
+                <div class="line"></div>
+                <div class="bar"></div>
+            </div>
+            <!-- 时间 -->
+            <div class="timer">
+                <span class="current">00:00:00</span> /
+                <span class="total">00:00:00</span>
+            </div>
+            <!-- 声音 -->
+        </div>
+    </div>
+    <div id="comments-wraper">
+        <input type="text" name="comments" id="txt" placeholder="发表弹幕"/>
+        <input type="button" id="btn" value="发表" />
+    </div>
+    
+	<script src="./js/jquery.min.js"></script>
+    <script>
+        // 封装格式化时间函数
+        var formatTime = function (time) {
+        	h = Math.floor(time / 3600);
+        	m = Math.floor(time % 3600 / 60);
+        	s = Math.floor(time % 3600);
+        	if(h < 10){
+        		h = "0" + h;
+        	};
+        	if(m < 10){
+        		m = "0" + m;
+        	}
+        	if(s < 10){
+        		s = "0" + s;
+        	}
+        	return h + ":" + m + ":" + s;
+        }
+        
+        // 获取视频播放区域
+        var video = document.querySelector("video");
+        // 当视频可以播放时，触发视频播放区域显示函数，覆盖菊花加载背景图
+        video.addEventListener('canplay', function () {
+            video.style.display = "block"; 
+            
+            // 获取并格式化总播放时间
+            var total = formatTime(video.duration);
+            $(".total").text(total);
+        })
+        
+        // 获取并格式化当前播放时间
+        video.ontimeupdate = function(){
+            var current = formatTime(video.currentTime);
+            $(".current").text(current);
+        }
+        
+        // 获取播放/暂停按钮。
+        var btnLeft = $(".switch")[0];
+        // 暂停时，点击播放；播放时，点击暂停。
+        btnLeft.addEventListener('click', function () {
+            if(video.paused){
+                video.play();
+            } else {
+                video.pause();
+            }
+			$(this).toggleClass('fa-play fa-pause');
+        })
+        
+        // 获取全屏/缩小按钮
+        var btnRight = $(".expand")[0];
+        // 缩小时，点击全屏；全屏时，点击缩小
+        btnRight.addEventListener('click', function () {
+            if(document.fullscreen){
+                document.cancelFullScreen();
+            } else {
+                video.webkitRequestFullScreen();
+            }
+        })
+        
+        var oBtn = $("#btn")[0];
+        oBtn.onclick = function () {
+            // 获取文本框内容和按钮
+            var oTxtValue = $("#txt").val()[0];
+            window.sessionStorage.setItem('comments', oTxtValue);
+        }
+        
+    </script>
+</body>
+</html>
